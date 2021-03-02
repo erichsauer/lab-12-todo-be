@@ -35,7 +35,6 @@ describe('app routes', () => {
 
       const body = {
         todo: 'wash the fishes',
-        completed: false,
       };
 
       const expectation = {
@@ -57,11 +56,6 @@ describe('app routes', () => {
     
     test('updates a specific user\'s to-do item', async() => {
 
-      const body = {
-        todo: 'wash the fishes',
-        completed: true,
-      };
-
       const expectation = {
         'id': 4,
         'todo': 'wash the fishes',
@@ -71,7 +65,6 @@ describe('app routes', () => {
 
       const data = await fakeRequest(app)
         .put('/api/todos/4')
-        .send(body)
         .set('Authorization', token)
         .expect('Content-Type', /json/)
         .expect(200);
