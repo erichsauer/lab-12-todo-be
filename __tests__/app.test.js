@@ -18,7 +18,7 @@ describe('app routes', () => {
       const signInData = await fakeRequest(app)
         .post('/auth/signup')
         .send({
-          email: 'jon@user.com',
+          email: 'me@me.me',
           password: '1234'
         });
       
@@ -31,35 +31,73 @@ describe('app routes', () => {
       return client.end(done);
     });
 
-    test('returns animals', async() => {
+    test('adds a specific user\'s to-do item', async() => {
 
-      const expectation = [
-        {
-          'id': 1,
-          'name': 'bessie',
-          'coolfactor': 3,
-          'owner_id': 1
-        },
-        {
-          'id': 2,
-          'name': 'jumpy',
-          'coolfactor': 4,
-          'owner_id': 1
-        },
-        {
-          'id': 3,
-          'name': 'spot',
-          'coolfactor': 10,
-          'owner_id': 1
-        }
-      ];
+      const body = {
+        todo: 'wash the fishes',
+        completed: false,
+      };
+
+      const expectation = {
+        'id': 4,
+        'todo': 'wash the fishes',
+        'completed': false,
+        'user_id': 2
+      };
 
       const data = await fakeRequest(app)
-        .get('/animals')
+        .post('/api/todos')
+        .send(body)
+        .set('Authorization', token)
         .expect('Content-Type', /json/)
         .expect(200);
 
       expect(data.body).toEqual(expectation);
     });
+    
+    test('updates a specific user\'s to-do item', async() => {
+
+      const body = {
+        todo: 'wash the fishes',
+        completed: true,
+      };
+
+      const expectation = {
+        'id': 4,
+        'todo': 'wash the fishes',
+        'completed': true,
+        'user_id': 2
+      };
+
+      const data = await fakeRequest(app)
+        .put('/api/todos/4')
+        .send(body)
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(data.body).toEqual(expectation);
+    });
+
+    test('returns a specific user\'s to-do list', async() => {
+
+      const expectation = [
+        {
+          'id': 4,
+          'todo': 'wash the fishes',
+          'completed': true,
+          'user_id': 2
+        }
+      ];
+
+      const data = await fakeRequest(app)
+        .get('/api/todos')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(data.body).toEqual(expectation);
+    });
+
   });
 });
